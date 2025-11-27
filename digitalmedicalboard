@@ -1,0 +1,17 @@
+import pytest
+from thedigitalboard import PatientData, Agent2_DataSynthesis, Agent4_PrescriptiveAction
+
+def test_synthesize_low_risk():
+    p = PatientData(age=30, symptoms=[], lab_results={"WBC": 6000})
+    s = Agent2_DataSynthesis().synthesize(p)
+    assert s["risk_score"] == 0
+
+def test_synthesize_high_risk():
+    p = PatientData(age=80, symptoms=["fever"], lab_results={"WBC": 15000})
+    s = Agent2_DataSynthesis().synthesize(p)
+    assert s["risk_score"] >= 4
+
+def test_prescribe_outputs():
+    s = {"risk_score": 4, "summary": "dummy"}
+    r = Agent4_PrescriptiveAction().prescribe(s)
+    assert "Immediate clinical evaluation" in r["recommendation"]
